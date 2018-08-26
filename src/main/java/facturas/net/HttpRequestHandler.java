@@ -115,6 +115,7 @@ public class HttpRequestHandler {
      */
     private void executeRequest(HttpRequestBase httpRequest) throws IOException {
         log.info("Executing request");
+
         log.debug("Request URI: " + httpRequest.getURI().toString());
 
         CloseableHttpResponse response = httpClient.execute(httpRequest);
