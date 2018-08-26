@@ -187,6 +187,6 @@ public class BillCounter {
 
     @Override
     public String toString() {
-        return "For ID " + id + " are: " + totalBills + " bills " + " and " + totalRequests + " requests where made.";
+        return "For ID \"" + id + "\" are: " + totalBills + " bills " + " and " + totalRequests + " requests where made.";
     }
 }
