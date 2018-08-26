@@ -35,6 +35,9 @@ public class BillCounter {
     private String uri;
     private String id;
 
+    private LocalDate start;
+    private LocalDate finish;
+
     static {
         log = Logger.getLogger(BillCounter.class.getName());
 
@@ -104,6 +107,9 @@ public class BillCounter {
         if (uri == null || id == null) {
             throw new IllegalStateException("URI or ID is null");
         }
+
+        this.start = start;
+        this.finish = finish;
 
         totalRequests = 0;
 
@@ -187,6 +193,12 @@ public class BillCounter {
 
     @Override
     public String toString() {
-        return "For ID \"" + id + "\" are: " + totalBills + " bills " + " and " + totalRequests + " requests where made.";
+        String message = "For ID \"" + id + "\" are: ";
+
+        message += totalBills + " bills\n";
+        message += "Between: " + start.format(ISO_LOCAL_DATE) + " - " + finish.format(ISO_LOCAL_DATE);
+        message += "\nRequests made: " + totalRequests;
+
+        return message;
     }
 }
