@@ -64,21 +64,13 @@ public class SimpleHttpRequestHandler {
         httpClient = HttpClients.createDefault();
     }
 
-    // Getters and setters
+    // Getters
     public int getResponseStatus() {
         return responseStatus;
     }
 
-    public void setResponseStatus(int responseStatus) {
-        this.responseStatus = responseStatus;
-    }
-
     public String getResponseContent() {
         return responseContent;
-    }
-
-    public void setResponseContent(String responseContent) {
-        this.responseContent = responseContent;
     }
 
     /**
