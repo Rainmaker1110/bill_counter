@@ -1,5 +1,6 @@
 package facturas.net;
 
+import facturas.io.PropertiesReader;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -27,7 +28,13 @@ import java.util.Map;
  * @author Hector Enrique Diaz Hernandez
  */
 
-public class HttpRequestHandler {
+public class SimpleHttpRequestHandler {
+    private static final int BUFFER_SIZE;
+
+    private static final String ENCODING;
+
+    private static final String PROPERTIES_FILE = "requesthandler.properties";
+
     private static Logger log; // LOGGER
 
     private int responseStatus;
@@ -37,10 +44,23 @@ public class HttpRequestHandler {
     private CloseableHttpClient httpClient;
 
     static {
-        log = Logger.getLogger(HttpRequestHandler.class.getName());
+        log = Logger.getLogger(SimpleHttpRequestHandler.class.getName());
+        PropertiesReader properties = new PropertiesReader();
+
+        if (properties.readFromFile(PROPERTIES_FILE)) {
+            BUFFER_SIZE = properties.getIntegerProperty("buffersize");
+
+            ENCODING = properties.getProperty("encoding");
+        } else {
+            log.info("Setting default properties");
+
+            BUFFER_SIZE = 1024;
+
+            ENCODING = "UTF-8";
+        }
     }
 
-    public HttpRequestHandler() {
+    public SimpleHttpRequestHandler() {
         httpClient = HttpClients.createDefault();
     }
 
@@ -70,16 +90,12 @@ public class HttpRequestHandler {
     public void executeGetRequest(String uri, Map<String, String> params) throws URISyntaxException, IOException {
         log.info("GET request");
 
-        HttpGet httpGet;
-
-        URIBuilder uriBuilder;
-
-        uriBuilder = new URIBuilder(uri);
+        URIBuilder uriBuilder = new URIBuilder(uri);
 
         // Method reference suggested by IDE, that's new for me!
         params.forEach(uriBuilder::setParameter);
 
-        httpGet = new HttpGet(uriBuilder.build());
+        HttpGet httpGet = new HttpGet(uriBuilder.build());
 
         executeRequest(httpGet);
     }
@@ -93,13 +109,9 @@ public class HttpRequestHandler {
     public void executePostRequest(String uri, Map<String, String> params) throws IOException {
         log.info("POST request");
 
-        HttpPost httpPost;
+        HttpPost httpPost = new HttpPost(uri);
 
-        List<NameValuePair> paramList;
-
-        httpPost = new HttpPost(uri);
-
-        paramList = new ArrayList<>();
+        List<NameValuePair> paramList = new ArrayList<>();
 
         params.forEach((String key, String value) -> paramList.add(new BasicNameValuePair(key, value)));
 
@@ -143,9 +155,10 @@ public class HttpRequestHandler {
 
         HttpEntity entity = response.getEntity();
 
+        // Read the content body using a byte array buffer
         ByteArrayOutputStream result = new ByteArrayOutputStream();
 
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[BUFFER_SIZE];
 
         int length;
 
@@ -153,7 +166,7 @@ public class HttpRequestHandler {
             result.write(buffer, 0, length);
         }
 
-        responseContent = result.toString("UTF-8");
+        responseContent = result.toString(ENCODING);
 
         log.debug("Request status: " + responseStatus);
         log.debug("Request response: " + responseContent);
