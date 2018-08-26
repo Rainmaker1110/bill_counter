@@ -2,8 +2,10 @@ package facturas.io;
 
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Properties;
 
 /**
@@ -31,13 +33,22 @@ public class PropertiesReader {
      */
     public boolean readFromFile(String fileName) {
         try {
-            fileName = getClass().getClassLoader().getResource(fileName).getPath();
+            URL resourcePath = PropertiesReader.class.getClassLoader().getResource(".");
+
+            FileInputStream fileInput;
+
+            if (resourcePath != null) {
+                fileInput = new FileInputStream(resourcePath.getPath() + fileName);
+            } else {
+                System.out.println(new File(fileName).getAbsoluteFile());
+                fileInput = new FileInputStream(new File(fileName));
+            }
 
             log.info("Reading properties from: " + fileName);
 
             properties = new Properties();
 
-            properties.load(new FileInputStream(fileName));
+            properties.load(fileInput);
 
             properties.forEach((key, value) -> log.debug(key + ": " + value));
 
