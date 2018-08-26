@@ -69,6 +69,21 @@ class SimpleHttpRequestHandlerTest {
 
         parameters.clear();
 
+        parameters.put("id", "1f1bcc03-5fa9-4e73-a150-79a569f912d");
+        parameters.put("start", "2017-01-01");
+
+        try {
+            tester.executeGetRequest("http://34.209.24.195/facturas", parameters);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(400, tester.getResponseStatus(), tester.getResponseContent());
+
+        parameters.clear();
+
         parameters.put("v", "7VykSxTeQLU");
 
         try {
