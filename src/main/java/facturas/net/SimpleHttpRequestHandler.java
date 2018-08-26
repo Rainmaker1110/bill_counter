@@ -84,8 +84,12 @@ public class SimpleHttpRequestHandler {
 
         URIBuilder uriBuilder = new URIBuilder(uri);
 
-        // Method reference suggested by IDE, that's new for me!
-        params.forEach(uriBuilder::setParameter);
+        if (params != null && !params.isEmpty()) {
+            log.info("Request with params");
+
+            // Method reference suggested by IDE, that's new for me!
+            params.forEach(uriBuilder::setParameter);
+        }
 
         HttpGet httpGet = new HttpGet(uriBuilder.build());
 
@@ -103,11 +107,15 @@ public class SimpleHttpRequestHandler {
 
         HttpPost httpPost = new HttpPost(uri);
 
-        List<NameValuePair> paramList = new ArrayList<>();
+        if (params != null && !params.isEmpty()) {
+            log.info("Request with params");
 
-        params.forEach((String key, String value) -> paramList.add(new BasicNameValuePair(key, value)));
+            List<NameValuePair> paramList = new ArrayList<>();
 
-        httpPost.setEntity(new UrlEncodedFormEntity(paramList));
+            params.forEach((String key, String value) -> paramList.add(new BasicNameValuePair(key, value)));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(paramList));
+        }
 
         executeRequest(httpPost);
     }
