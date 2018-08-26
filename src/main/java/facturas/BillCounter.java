@@ -52,20 +52,18 @@ public class BillCounter {
 
         if (properties.readFromFile(PROPERTIES_FILE)) {
             uri = properties.getProperty("uri");
-            id = properties.getProperty("id");
         } else {
             log.info("Setting default properties");
 
             uri = null;
-            id = null;
         }
     }
 
     /**
      * Sets uri and id from parameters.
      *
-     * @param uri  the uri to make the requests
-     * @param id the id for search its bills
+     * @param uri the uri to make the requests
+     * @param id  the id for search its bills
      */
     public BillCounter(String uri, String id) {
         this.uri = uri;
@@ -100,13 +98,16 @@ public class BillCounter {
     /**
      * Resets the total requests to 0 and executes recursive algorithm.
      *
+     * @param id     the id to retrieve the bill count
      * @param start  the start date for search
      * @param finish the end date for search
      */
-    public void countBills(LocalDate start, LocalDate finish) throws InvalidRequestException {
-        if (uri == null || id == null) {
-            throw new IllegalStateException("URI or ID is null");
+    public void countBills(String id, LocalDate start, LocalDate finish) throws InvalidRequestException {
+        if (uri == null) {
+            throw new IllegalStateException("URI is null");
         }
+
+        this.id = id;
 
         this.start = start;
         this.finish = finish;
