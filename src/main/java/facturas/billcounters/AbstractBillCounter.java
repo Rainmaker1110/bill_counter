@@ -5,7 +5,6 @@ import facturas.net.SimpleHttpRequestHandler;
 import org.apache.log4j.Logger;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 
@@ -60,24 +59,6 @@ public abstract class AbstractBillCounter {
     }
 
     public abstract void countBills(String uri, String id, LocalDate start, LocalDate finish) throws InvalidRequestException;
-
-    /**
-     * Splits a date range in half.
-     * Uses the {@link java.time.Period} between the {@link LocalDate} start and end parameters.
-     *
-     * @param start the start date for search
-     * @param end   the end date for search
-     * @return LocalDate the half date between the two dates
-     */
-    protected LocalDate dateSlicer(LocalDate start, LocalDate end) {
-        /* Adds a day to end date because ChronoUnit.DAYS.between method is inclusive for the first parameter
-        and exclusive for the second parameter. */
-        long halfOfDays = ChronoUnit.DAYS.between(start, end.plusDays(1)) / 2;
-
-        log.debug("Half of days: " + halfOfDays);
-
-        return start.plusDays(halfOfDays);
-    }
 
     @Override
     public String toString() {
