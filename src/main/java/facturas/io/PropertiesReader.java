@@ -40,7 +40,6 @@ public class PropertiesReader {
             if (resourcePath != null) {
                 fileInput = new FileInputStream(resourcePath.getPath() + fileName);
             } else {
-                System.out.println(new File(fileName).getAbsoluteFile());
                 fileInput = new FileInputStream(new File(fileName));
             }
 
