@@ -13,6 +13,8 @@ También se implenta una clase que realiza las peticiones en periodos fijos de d
 
 En la carpeta release se encuentra el jar compilado, se debe ejecutar con el comando: java -jar facturas.jar <id> <start> <finish>
 
+En el archivo de configuración billcounter.properties puedes establecer qué implementación usar (recursive, fixed) con la propiedad billcounter.implementation y el tamaño del periodo fijo (en días) de la implementación de periodo fijo con la propiedad billcounter.fixed.size .
+
 ## Autor
 
 **Héctor Enrique Díaz Hernández**
