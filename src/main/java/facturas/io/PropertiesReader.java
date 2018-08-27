@@ -30,6 +30,7 @@ public class PropertiesReader {
      * Attempts to read a properties file.
      *
      * @param fileName the properties filename
+     * @return boolean true if read success, false otherwise
      */
     public boolean readFromFile(String fileName) {
         try {

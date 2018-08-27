@@ -35,23 +35,35 @@ public class FixedPeriodBillCounter extends AbstractBillCounter {
     /**
      * Sets uri and fixed period from parameters.
      *
-     * @param uri         the uri to make the requests
      * @param fixedPeriod the fixed period range
      */
-    public FixedPeriodBillCounter(String uri, int fixedPeriod) {
-        this.uri = uri;
+    public FixedPeriodBillCounter(int fixedPeriod) {
         this.fixedPeriod = fixedPeriod;
     }
 
     @Override
-    public void countBills(String id, LocalDate start, LocalDate finish) throws InvalidRequestException {
-        if (uri == null || fixedPeriod == 0) {
-            throw new IllegalStateException("URI is null or fixedPeriod is 0");
+    public void countBills(String uri, String id, LocalDate start, LocalDate finish) throws InvalidRequestException {
+        if (uri == null) {
+            throw new IllegalArgumentException("URI is null");
+        }
+
+        if (start == null) {
+            throw new IllegalArgumentException("start is null");
+        }
+
+        if (finish == null) {
+            throw new IllegalArgumentException("finish is null");
         }
 
         if (start.isAfter(finish)) {
-            throw new IllegalStateException("start date is after finish date");
+            throw new IllegalArgumentException("start date is after finish date");
         }
+
+        if (fixedPeriod == 0 || fixedPeriod < 0) {
+            throw new IllegalStateException("fixedPeriod <= 0");
+        }
+
+        this.uri = uri;
 
         this.id = id;
 
@@ -80,6 +92,7 @@ public class FixedPeriodBillCounter extends AbstractBillCounter {
      *
      * @param start  the start date for search
      * @param finish the end date for search
+     * @return int the bills between the dates
      */
     private int getBills(LocalDate start, LocalDate finish) throws InvalidRequestException {
         // Put the parameters into a map

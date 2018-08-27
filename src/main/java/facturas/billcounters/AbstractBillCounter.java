@@ -59,7 +59,7 @@ public abstract class AbstractBillCounter {
         return totalBills;
     }
 
-    public abstract void countBills(String id, LocalDate start, LocalDate finish) throws InvalidRequestException;
+    public abstract void countBills(String uri, String id, LocalDate start, LocalDate finish) throws InvalidRequestException;
 
     /**
      * Splits a date range in half.
@@ -67,6 +67,7 @@ public abstract class AbstractBillCounter {
      *
      * @param start the start date for search
      * @param end   the end date for search
+     * @return LocalDate the half date between the two dates
      */
     protected LocalDate dateSlicer(LocalDate start, LocalDate end) {
         /* Adds a day to end date because ChronoUnit.DAYS.between method is inclusive for the first parameter

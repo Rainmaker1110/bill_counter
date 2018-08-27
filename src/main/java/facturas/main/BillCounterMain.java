@@ -24,16 +24,22 @@ public class BillCounterMain {
     }
 
     public static void main(String[] args) {
-        // Needs 3 parameters
-        if (args.length != 3) {
-            System.err.println("Use: java BillCounterMain <id> <start> <finish>");
+        // Needs 4 parameters
+        if (args.length != 4) {
+            System.err.println("Use: java BillCounterMain <uri> <id> <start> <finish>");
 
             System.exit(-1);
         }
 
         log.debug("Argument 0: " + args[0]);
         log.debug("Argument 1: " + args[1]);
-        log.debug("Argument 2: " + args[1]);
+        log.debug("Argument 2: " + args[2]);
+        log.debug("Argument 3: " + args[3]);
+
+        String uri = args[0];
+        String id = args[1];
+        String startDate = args[2];
+        String finishDate = args[3];
 
         try {
             PropertiesReader properties = new PropertiesReader();
@@ -55,10 +61,10 @@ public class BillCounterMain {
                 System.exit(-1);
             }
 
-            LocalDate start = LocalDate.parse(args[1], ISO_LOCAL_DATE);
-            LocalDate finish = LocalDate.parse(args[2], ISO_LOCAL_DATE);
+            LocalDate start = LocalDate.parse(startDate, ISO_LOCAL_DATE);
+            LocalDate finish = LocalDate.parse(finishDate, ISO_LOCAL_DATE);
 
-            billCounter.countBills(args[0], start, finish);
+            billCounter.countBills(uri, id, start, finish);
 
             System.out.println(billCounter);
         } catch (DateTimeParseException e) {

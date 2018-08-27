@@ -1,6 +1,5 @@
-package facturas;
+package facturas.billcounters;
 
-import facturas.billcounters.AbstractBillCounter;
 import facturas.exceptions.InvalidRequestException;
 import org.apache.log4j.Logger;
 
@@ -30,15 +29,6 @@ public class RecursiveBillCounter extends AbstractBillCounter {
     }
 
     /**
-     * Sets uri from parameter.
-     *
-     * @param uri the uri to make the requests
-     */
-    public RecursiveBillCounter(String uri) {
-        this.uri = uri;
-    }
-
-    /**
      * Resets the total requests to 0 and executes recursive algorithm.
      *
      * @param id     the id to retrieve the bill count
@@ -46,10 +36,28 @@ public class RecursiveBillCounter extends AbstractBillCounter {
      * @param finish the end date for search
      */
     @Override
-    public void countBills(String id, LocalDate start, LocalDate finish) throws InvalidRequestException {
+    public void countBills(String uri, String id, LocalDate start, LocalDate finish) throws InvalidRequestException {
         if (uri == null) {
-            throw new IllegalStateException("URI is null");
+            throw new IllegalArgumentException("URI is null");
         }
+
+        if (id == null) {
+            throw new IllegalArgumentException("id is null");
+        }
+
+        if (start == null) {
+            throw new IllegalArgumentException("start is null");
+        }
+
+        if (finish == null) {
+            throw new IllegalArgumentException("finish is null");
+        }
+
+        if (start.isAfter(finish)) {
+            throw new IllegalArgumentException("start date is after finish date");
+        }
+
+        this.uri = uri;
 
         this.id = id;
 
@@ -67,6 +75,7 @@ public class RecursiveBillCounter extends AbstractBillCounter {
      *
      * @param start  the start date for search
      * @param finish the end date for search
+     * @return int bills between the dates
      */
     private int getBills(LocalDate start, LocalDate finish) throws InvalidRequestException {
         // Put the parameters into a map

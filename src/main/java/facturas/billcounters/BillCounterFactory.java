@@ -1,10 +1,20 @@
 package facturas.billcounters;
 
-import facturas.RecursiveBillCounter;
 import facturas.io.PropertiesReader;
 
+/**
+ * Instantiates the BillCounter indicated in the properties.
+ *
+ * @author Hector Enrique Diaz Hernandez
+ */
 public class BillCounterFactory {
 
+    /**
+     * Sets uri and fixed period from parameters.
+     *
+     * @param properties the properties read from file
+     * @return AbstractBillCounter the BillCounter indicated in the properties
+     */
     public AbstractBillCounter getBillCounter(PropertiesReader properties) {
         String billCounterType = properties.getProperty("billcounter.implementation");
 
@@ -12,14 +22,12 @@ public class BillCounterFactory {
             return null;
         }
 
-        String uri = properties.getProperty("billcounter.uri");
-
         if (billCounterType.equalsIgnoreCase("recursive")) {
-            RecursiveBillCounter billCounter = new RecursiveBillCounter(uri);
+            RecursiveBillCounter billCounter = new RecursiveBillCounter();
 
             return billCounter;
         } else if (billCounterType.equalsIgnoreCase("fixed")) {
-            FixedPeriodBillCounter billCounter = new FixedPeriodBillCounter(uri, properties.getIntegerProperty("billcounter.fixed.period"));
+            FixedPeriodBillCounter billCounter = new FixedPeriodBillCounter(properties.getIntegerProperty("billcounter.fixed.period"));
 
             return billCounter;
         }
