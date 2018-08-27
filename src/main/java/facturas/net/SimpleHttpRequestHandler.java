@@ -45,12 +45,13 @@ public class SimpleHttpRequestHandler {
 
     static {
         log = Logger.getLogger(SimpleHttpRequestHandler.class.getName());
+
         PropertiesReader properties = new PropertiesReader();
 
         if (properties.readFromFile(PROPERTIES_FILE)) {
-            BUFFER_SIZE = properties.getIntegerProperty("buffersize");
+            BUFFER_SIZE = properties.getIntegerProperty("requesthandler.buffersize");
 
-            ENCODING = properties.getProperty("encoding");
+            ENCODING = properties.getProperty("requesthandler.encoding");
         } else {
             log.info("Setting default properties");
 

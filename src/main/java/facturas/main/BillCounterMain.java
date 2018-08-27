@@ -1,7 +1,12 @@
 package facturas.main;
 
-import facturas.BillCounter;
+import facturas.billcounters.AbstractBillCounter;
+import facturas.billcounters.BillCounterFactory;
+
 import facturas.exceptions.InvalidRequestException;
+
+import facturas.io.PropertiesReader;
+
 import org.apache.log4j.Logger;
 
 import java.time.LocalDate;
@@ -10,6 +15,8 @@ import java.time.format.DateTimeParseException;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 
 public class BillCounterMain {
+    public static final String PROPERTIES_FILE = "billcounter.properties";
+
     private static Logger log; // LOGGER
 
     static {
@@ -17,10 +24,11 @@ public class BillCounterMain {
     }
 
     public static void main(String[] args) {
+        // Needs 3 parameters
         if (args.length != 3) {
             System.err.println("Use: java BillCounterMain <id> <start> <finish>");
 
-           System.exit(-1);
+            System.exit(-1);
         }
 
         log.debug("Argument 0: " + args[0]);
@@ -28,7 +36,24 @@ public class BillCounterMain {
         log.debug("Argument 2: " + args[1]);
 
         try {
-            BillCounter billCounter = new BillCounter();
+            PropertiesReader properties = new PropertiesReader();
+
+            if (!properties.readFromFile(PROPERTIES_FILE)) {
+                System.err.println("No billcounter.properties file found.");
+
+                System.exit(-1);
+            }
+
+            // Gets the correct BillCounter
+            BillCounterFactory counterFactory = new BillCounterFactory();
+
+            AbstractBillCounter billCounter = counterFactory.getBillCounter(properties);
+
+            if (billCounter == null) {
+                System.err.println("Unknown implementation");
+
+                System.exit(-1);
+            }
 
             LocalDate start = LocalDate.parse(args[1], ISO_LOCAL_DATE);
             LocalDate finish = LocalDate.parse(args[2], ISO_LOCAL_DATE);

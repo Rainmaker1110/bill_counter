@@ -1,98 +1,41 @@
 package facturas;
 
+import facturas.billcounters.AbstractBillCounter;
 import facturas.exceptions.InvalidRequestException;
-import facturas.io.PropertiesReader;
-import facturas.net.SimpleHttpRequestHandler;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.Hashtable;
 import java.util.Map;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 
 /**
- * Implements a recursive algorithm splitting the dates in halfs
- * when there are more than 100 bills.
+ * Implements a recursive algorithm splitting the dates in halves.
  *
  * @author Hector Enrique Diaz Hernandez
  */
-public class BillCounter {
-    private static final int STATUS_OK = 200;
-
-    private static final String PROPERTIES_FILE = "billcounter.properties";
-
-    private static Logger log; // LOGGER
-
-    private static SimpleHttpRequestHandler requestHandler;
-
-    private int totalRequests;
-    private int totalBills;
-
-    private String uri;
-    private String id;
-
-    private LocalDate start;
-    private LocalDate finish;
-
+public class RecursiveBillCounter extends AbstractBillCounter {
     static {
-        log = Logger.getLogger(BillCounter.class.getName());
-
-        requestHandler = new SimpleHttpRequestHandler();
+        log = Logger.getLogger(RecursiveBillCounter.class.getName());
     }
 
     /**
-     * Tries to get uri and id from config file.
+     * Stablish properties to invalid state.
      */
-    public BillCounter() {
-        PropertiesReader properties = new PropertiesReader();
-
-        if (properties.readFromFile(PROPERTIES_FILE)) {
-            uri = properties.getProperty("uri");
-        } else {
-            log.info("Setting default properties");
-
-            uri = null;
-        }
+    public RecursiveBillCounter() {
+        uri = null;
     }
 
     /**
-     * Sets uri and id from parameters.
+     * Sets uri from parameter.
      *
      * @param uri the uri to make the requests
-     * @param id  the id for search its bills
      */
-    public BillCounter(String uri, String id) {
+    public RecursiveBillCounter(String uri) {
         this.uri = uri;
-        this.id = id;
-    }
-
-    // Getters and setters
-    public String getUri() {
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public int getTotalRequests() {
-        return totalRequests;
-    }
-
-    public int getTotalBills() {
-        return totalBills;
     }
 
     /**
@@ -102,6 +45,7 @@ public class BillCounter {
      * @param start  the start date for search
      * @param finish the end date for search
      */
+    @Override
     public void countBills(String id, LocalDate start, LocalDate finish) throws InvalidRequestException {
         if (uri == null) {
             throw new IllegalStateException("URI is null");
@@ -157,7 +101,7 @@ public class BillCounter {
 
         String content = requestHandler.getResponseContent();
 
-        // A succeful request where made
+        // A successful request where made
         totalRequests++;
 
         log.debug("Requests made: " + totalRequests);
@@ -175,31 +119,4 @@ public class BillCounter {
         }
     }
 
-    /**
-     * Splits a date range in half.
-     * Uses the {@link java.time.Period} between the {@link LocalDate} start and end parameters.
-     *
-     * @param start the start date for search
-     * @param end   the end date for search
-     */
-    private LocalDate dateSlicer(LocalDate start, LocalDate end) {
-        /* Adds a day to end date because ChronoUnit.DAYS.between method is inclusive for the first parameter
-        and exclusive for the second parameter. */
-        long halfOfDays = ChronoUnit.DAYS.between(start, end.plusDays(1)) / 2;
-
-        log.debug("Half of days: " + halfOfDays);
-
-        return start.plusDays(halfOfDays);
-    }
-
-    @Override
-    public String toString() {
-        String message = "For ID \"" + id + "\" are: ";
-
-        message += totalBills + " bills\n";
-        message += "Between: " + start.format(ISO_LOCAL_DATE) + " - " + finish.format(ISO_LOCAL_DATE);
-        message += "\nRequests made: " + totalRequests;
-
-        return message;
-    }
 }
