@@ -59,18 +59,19 @@ public class FixedPeriodBillCounter extends AbstractBillCounter {
         this.finish = finish;
 
         totalRequests = 0;
+        totalBills = 0;
 
         LocalDate relativeStart = start;
         LocalDate relativeFinish = start.plusDays(fixedPeriod);
 
         while (relativeFinish.isBefore(finish)) {
-            log.debug("relativeFinish: " + relativeFinish.format(ISO_LOCAL_DATE));
+            totalBills += getBills(relativeStart, relativeFinish);
 
-            totalBills = getBills(relativeStart, relativeFinish);
-
-            relativeStart = relativeFinish;
+            relativeStart = relativeFinish.plusDays(1);
             relativeFinish = relativeFinish.plusDays(fixedPeriod);
         }
+
+        totalBills += getBills(relativeStart, finish);
     }
 
     /**
@@ -120,8 +121,12 @@ public class FixedPeriodBillCounter extends AbstractBillCounter {
 
         // The base case, when the response content is a number
         if (content.chars().allMatch(Character::isDigit)) {
+            log.debug("Integer result");
+
             return Integer.parseInt(content);
         } else { // Split dates in half
+            log.debug("More than 100 bills");
+
             LocalDate half = dateSlicer(start, finish);
 
             log.debug("Half of date: " + half.format(ISO_LOCAL_DATE));

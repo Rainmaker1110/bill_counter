@@ -108,8 +108,12 @@ public class RecursiveBillCounter extends AbstractBillCounter {
 
         // The base case, when the response content is a number
         if (content.chars().allMatch(Character::isDigit)) {
+            log.debug("Integer result");
+
             return Integer.parseInt(content);
         } else { // Split dates in half
+            log.debug("More than 100 bills");
+
             LocalDate half = dateSlicer(start, finish);
 
             log.debug("Half of date: " + half.format(ISO_LOCAL_DATE));
